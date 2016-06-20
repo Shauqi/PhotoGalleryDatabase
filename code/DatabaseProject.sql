@@ -127,3 +127,30 @@ insert into image values(2227,19,3337,'eater','Only Like','19-JUNE-2016');
 insert into image values(2228,22,3338,'dope','none','17-JUNE-2016');
 
 -- sample value insert section ends here
+
+
+-- Example of Aggregate functions applied to the project
+
+
+-- Intuition of Aggregate function starts here
+
+
+--using of count function on user1 table counts the number of users
+select count(user_id) from user1;
+
+select count(gallery_id) from gallery where gallery_id>=2224; -- count on gallery
+
+--using of sum function on image table sum up the values of gallery_id
+select sum(gallery_id) as gallerySum from image;
+
+--using of avg function on role table finds the avg value of user_id
+
+select avg(user_id) from role;
+
+--using of min and max functions on user1 table finds the maximum and minimum values of user_id respectively
+
+select max(user_id) from user1;
+select min(user_id) from user1;
+
+-- Intuition of Aggregate function ends here
+
