@@ -154,3 +154,24 @@ select min(user_id) from user1;
 
 -- Intuition of Aggregate function ends here
 
+
+
+-- SET OPERATION EXAMPLE ON PROJECT
+-- Set operation section starts here
+
+-- Example of Union all function. Basically union all unions data without eliminating duplication
+
+select u.user_id,u.name from user1 u union all select g.user_id,g.name from gallery g where g.user_id in(select user_id from role where role_id>=14);
+
+-- Example of Union function. Union function eliminates the duplicates
+
+select u.user_id,u.name from user1 u union select g.user_id,g.name from gallery g where g.user_id in(select user_id from role where role_id>=14);
+
+-- Example of Intersect funtion. it selects data which are common on both table
+
+select u.user_id,u.name from user1 u intersect select g.user_id,g.name from gallery g where g.user_id in(select user_id from role where role_id>=14);
+
+-- Example of Minus function. It selects data from the first table excluding common data in second table
+
+select u.user_id,u.name from user1 u minus select g.user_id,g.name from gallery g where g.user_id in(select user_id from role where role_id>=14);
+
