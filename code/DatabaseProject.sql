@@ -175,3 +175,23 @@ select u.user_id,u.name from user1 u intersect select g.user_id,g.name from gall
 
 select u.user_id,u.name from user1 u minus select g.user_id,g.name from gallery g where g.user_id in(select user_id from role where role_id>=14);
 
+
+-- The following section gives intuition on join. The join section starts here.
+
+-- The simple join
+
+select u.name,r.role_id from user1 u join role r on u.user_id=r.user_id;
+
+-- here on is used
+
+select u.name,r.role_id from user1 u join role r using (user_id);
+
+-- here using is used
+
+-- The natural join also acts as join but it compares all the same column and there is no need of condition
+
+select u.name,i.filename from user1 u natural join image i;
+
+-- The cross join results in cartesian product of two table contents
+
+select u.name,g.name from user1 u cross join gallery g;
