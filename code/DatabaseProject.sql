@@ -178,7 +178,7 @@ select u.user_id,u.name from user1 u minus select g.user_id,g.name from gallery 
 
 -- The following section gives intuition on join. The join section starts here.
 
--- The simple join
+-- The simple join. inner join and simple join are same
 
 select u.name,r.role_id from user1 u join role r on u.user_id=r.user_id;
 
@@ -195,3 +195,16 @@ select u.name,i.filename from user1 u natural join image i;
 -- The cross join results in cartesian product of two table contents
 
 select u.name,g.name from user1 u cross join gallery g;
+
+-- Outer Join
+-- left outer join
+
+select g.name,i.filename from gallery g left outer join image i on g.gallery_id = i.gallery_id;
+
+-- right outer join
+
+select g.name,i.filename from gallery g right outer join image i on g.gallery_id = i.gallery_id;
+
+-- full outer join
+
+select g.name,i.filename from gallery g full outer join image i on g.gallery_id = i.gallery_id;
