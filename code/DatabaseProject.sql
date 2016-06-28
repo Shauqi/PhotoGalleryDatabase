@@ -208,3 +208,30 @@ select g.name,i.filename from gallery g right outer join image i on g.gallery_id
 -- full outer join
 
 select g.name,i.filename from gallery g full outer join image i on g.gallery_id = i.gallery_id;
+
+-- Example of plsql on project
+-- The plsql section starts here
+
+-- Example of userid and name checking
+
+set serveroutput on;
+declare   
+-- variable of user_id type from user1 table is declared and initialized with value
+u_id1  user1.user_id%type:=1;
+-- variable of name type from user1 table is declared and initialized with value
+u_name user1.name%type:='Akash'; 
+-- variable of user_id type from user1 table is declared and initialized with value
+u_id2 user1.user_id%type;
+begin
+-- query of user_id where initialized u_name is equivalent to user1 tables one of the name
+-- if the name is found then u_id2 will contain the corresponding user_id
+select user_id into u_id2 from user1 where name=u_name;
+-- checking if u_id1 and u_id2 is equal if equal
+if u_id1=u_id2 then
+             dbms_output.put_line('User found in database');
+else
+    dbms_output.put_line('User not found in database');
+end if;
+end;
+/
+show errors;
