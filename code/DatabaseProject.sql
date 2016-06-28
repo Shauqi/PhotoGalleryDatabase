@@ -235,3 +235,28 @@ end if;
 end;
 /
 show errors;
+
+
+-- pl sql to show image filename of a gallery using loop
+set serveroutput on
+declare
+-- Here a row of gallery is selected by gallery_cur which contains gallery name 'Carmichael'
+cursor gallery_cur is select gallery_id from gallery where name='Carmichael';
+-- To store a particular row a gallery_pointer of gallery_cur is declared
+gallery_pointer gallery_cur%rowtype;
+fname image.filename%type;
+up_date image.upload_date%type;
+begin
+open gallery_cur;
+-- By the loop each time a filename and upload date of an image is selected of current gallery id which is collected by gallery pointer
+loop
+fetch gallery_cur into gallery_pointer;
+select filename,upload_date into fname,up_date from image where image.gallery_id=gallery_pointer.gallery_id;
+
+dbms_output.put_line('The '||gallery_pointer.gallery_id||' contains '||fname||' uploaded in '||up_date);
+exit when gallery_cur%rowcount>2;
+end loop;
+close gallery_cur;
+end;
+/
+show errors;
