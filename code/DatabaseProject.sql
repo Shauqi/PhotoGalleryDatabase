@@ -2,6 +2,7 @@ drop table image;
 drop table gallery;
 drop table role;
 drop table user1;
+drop table myaudit;
 
 
 -- Creating table user where primary key is user_id
@@ -210,6 +211,7 @@ select g.name,i.filename from gallery g right outer join image i on g.gallery_id
 select g.name,i.filename from gallery g full outer join image i on g.gallery_id = i.gallery_id;
 
 -- Example of plsql on project
+-- One Thing to remeber use proper indentation in plsql else you may see errors
 -- The plsql section starts here
 
 -- Example of userid and name checking
@@ -260,3 +262,72 @@ close gallery_cur;
 end;
 /
 show errors;
+
+-- Example of Trigger in PL/SQL used in project
+-- The reference for trigger: http://www.rebellionrider.com/pl-sql-tutorials/triggers-in-oracle-database/table-auditing-using-dml-triggers-in-oracle-database.htm#.V4iqCrh97IU
+-- Table Auditing using DML TRIGGER
+-- Creation of audit table
+create table myaudit
+	(
+		new_name varchar2(30),
+		old_name varchar2(30),
+		user_name varchar2(30),
+		entry_date varchar2(30),
+		operation varchar2(30)
+		);
+
+-- Trigger for user1 table
+set serveroutput on
+CREATE OR REPLACE TRIGGER user1audit
+BEFORE INSERT OR DELETE OR UPDATE ON user1
+FOR EACH ROW  
+
+BEGIN 
+
+  IF INSERTING THEN
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(:NEW.NAME, Null , user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS'), 'Insert');
+  ELSIF DELETING THEN
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(NULL,:OLD.NAME, user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS') , 'Delete');
+  ELSIF UPDATING THEN
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(:NEW.NAME, :OLD.NAME, user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS'),'Update');
+  END IF;
+END;
+ /
+
+
+-- Trigger for gallery table
+set serveroutput on
+CREATE OR REPLACE TRIGGER galleryaudit
+BEFORE INSERT OR DELETE OR UPDATE ON gallery
+FOR EACH ROW  
+
+BEGIN 
+
+  IF INSERTING THEN
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(:NEW.NAME, Null , user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS'), 'Insert');
+  ELSIF DELETING THEN
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(NULL,:OLD.NAME, user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS') , 'Delete');
+  ELSIF UPDATING THEN
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(:NEW.NAME, :OLD.NAME, user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS'),'Update');
+  END IF;
+END;
+ /
+
+ -- Trigger for image table
+ set serveroutput on
+CREATE OR REPLACE TRIGGER imageaudit
+BEFORE INSERT OR DELETE OR UPDATE ON image
+FOR EACH ROW  
+
+BEGIN 
+
+  IF INSERTING THEN
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(:NEW.FILENAME, Null , user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS'), 'Insert');
+  ELSIF DELETING THEN
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(NULL,:OLD.FILENAME, user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS') , 'Delete');
+  ELSIF UPDATING THEN
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(:NEW.FILENAME, :OLD.FILENAME, user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS'),'Update');
+  END IF;
+END;
+ /
+
