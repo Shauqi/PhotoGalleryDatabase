@@ -52,7 +52,7 @@ foreign key(gallery_id) references gallery(gallery_id) on delete cascade;
 insert into user1 values(1,'Al-Mamun Akash','5555','Coder,Contest Programmer',utl_raw.cast_to_raw('E:\Semester 3-1\Database\PhotoGalleryDatabase\code\1akash_prof.jpg'),0);
 insert into user1 values(6,'Tanmoy Datta','5689','Coding Guru',utl_raw.cast_to_raw('E:\Semester 3-1\Database\PhotoGalleryDatabase\code\6Datta_prof.jpg'),0);
 insert into user1 values(22,'Rafi Heisenberg','6689','great',utl_raw.cast_to_raw('E:\Semester 3-1\Database\PhotoGalleryDatabase\code\22Rafi_prof.jpg'),0);
-insert into user1 values(60,'Tanmoy Datta','5689','Coding Guru',utl_raw.cast_to_raw('E:\Semester 3-1\Database\PhotoGalleryDatabase\code\60Ghosh_prof.jpg'),1);
+insert into user1 values(60,'Tushar Ghosh','5689','Coder',utl_raw.cast_to_raw('E:\Semester 3-1\Database\PhotoGalleryDatabase\code\60Ghosh_prof.jpg'),1);
 
 
 insert into gallery values(1,'Carmichael');
@@ -163,6 +163,7 @@ BEGIN
   END IF;
 END;
  /
+ show errors;
 
 
 -- Trigger for gallery table
@@ -174,14 +175,17 @@ FOR EACH ROW
 BEGIN 
 
   IF INSERTING THEN
-  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(:NEW.NAME, Null , user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS'), 'Insert');
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(:NEW.GALLERY_NAME, Null , user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS'), 'Insert');
   ELSIF DELETING THEN
-  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(NULL,:OLD.NAME, user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS') , 'Delete');
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(NULL,:OLD.GALLERY_NAME, user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS') , 'Delete');
   ELSIF UPDATING THEN
-  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(:NEW.NAME, :OLD.NAME, user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS'),'Update');
+  INSERT INTO myaudit (new_name,old_name, user_name, entry_date, operation) VALUES(:NEW.GALLERY_NAME, :OLD.GALLERY_NAME, user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS'),'Update');
   END IF;
 END;
  /
+ show errors;
+
+
 
  -- Trigger for image table
  set serveroutput on
@@ -200,6 +204,7 @@ BEGIN
   END IF;
 END;
  /
+show errors;
 
 
 --Procedure For updating user_image
@@ -216,7 +221,7 @@ begin
   end if;
 end;
 /    
-show errors
+show errors;
 
 
 set serveroutput on;
@@ -224,3 +229,42 @@ begin
   update_user_image('Al-Mamun Akash',5555,utl_raw.cast_to_raw('E:\Semester 3-1\Database\PhotoGalleryDatabase\code\6Datta_prof.jpg'),0);
 end;
 /
+
+select * from myaudit;
+
+-- Procedure for inserting image in image table
+create or replace procedure insert_image(
+    u_name user1.name%type,
+	u_pass user1.password%type,
+	img_id image.image_id%type,
+	gal_id image.gallery_id%type,
+	flname image.filename%type,
+	im image.img%type,
+	des image.description%type,
+	ran image.rank%type,
+	up_date image.upload_date%type) IS
+u_id user1.user_id%type;
+rol user1.role%type;
+begin
+select user_id,role into u_id,rol from user1 where name=u_name and u_pass=password;
+   if rol=0 then
+     insert into image values(img_id,gal_id,flname,im,u_id,des,ran,up_date);
+   else
+     dbms_output.put_line('You have no authority to insert images');
+   end if;
+end;
+/
+show errors;
+
+
+set serveroutput on;
+begin
+insert_image('Rafi Heisenberg','6689',7,1,'Rafi image 2',utl_raw.cast_to_raw('E:\Semester 3-1\Database\PhotoGalleryDatabase\code\22Rafiimg2.jpg'),'Rafi got pic2',7,'3-AUGUST-2016');
+end;
+/
+
+
+select image_id, gallery_id,filename,description,rank from image;
+
+
+select * from myaudit;
